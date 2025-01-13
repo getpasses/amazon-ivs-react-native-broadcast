@@ -33,23 +33,6 @@ class IVSBroadcastCameraViewManager: RCTViewManager {
       let component = self.bridge.uiManager.view(forReactTag: node) as! IVSBroadcastCameraView
       component.swapCamera()
     }
-  }
-  
-  @objc public func GET_AVAILABLE_DEVICES(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-     DispatchQueue.main.async {
-       let devices = IVSBroadcastSession.listAvailableDevices()
-       
-       let deviceList = devices.map { device -> [String: Any] in
-         return [
-          "id": device.deviceId,
-           "type": device.type.rawValue,
-           "position": device.position.rawValue
-         ]
-       }
-       
-       resolve(deviceList)
-     }
-   }
-  
+  }  
 }
 

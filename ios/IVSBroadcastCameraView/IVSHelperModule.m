@@ -24,7 +24,7 @@ RCT_EXPORT_METHOD(getAvailableDevices:(RCTPromiseResolveBlock)resolve reject:(RC
       NSLog(@"Device: %@", device);
       [deviceList addObject:@{
         @"id": device.deviceId,
-        @"name": device.name,
+        @"name": device.friendlyName,
         @"type": @(device.type),
         @"position": @(device.position)
       }];
