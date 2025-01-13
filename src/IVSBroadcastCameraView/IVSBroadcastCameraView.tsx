@@ -1,36 +1,23 @@
-import React, { useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 import {
-  Platform,
-  UIManager,
   findNodeHandle,
+  Platform,
   requireNativeComponent,
-  NativeModules,
+  UIManager,
 } from 'react-native';
 
 import {
-  Command,
-  StateStatusEnum,
-  StateStatusUnion,
-  NetworkHealth,
-  NetworkHealthEnum,
   BroadcastQuality,
   BroadcastQualityEnum,
+  Command,
+  IIVSBroadcastCameraNativeViewProps,
   IIVSBroadcastCameraView,
   IIVSBroadcastCameraViewProps,
-  IIVSBroadcastCameraNativeViewProps,
+  NetworkHealth,
+  NetworkHealthEnum,
+  StateStatusEnum,
+  StateStatusUnion,
 } from './IVSBroadcastCameraView.types';
-
-const { IVSHelperModule } = NativeModules;
-
-export const getAvailableDevices = async () => {
-  try {
-    const devices = await IVSHelperModule.getAvailableDevices();
-    return devices;
-  } catch (error) {
-    console.error('Error fetching devices:', error);
-    throw error;
-  }
-};
 
 const isNumber = (value: unknown): value is number => typeof value === 'number';
 
@@ -85,34 +72,33 @@ const IVSBroadcastCameraView = forwardRef<
 
   const nativeViewRef = useRef(null);
 
-  useImperativeHandle<IIVSBroadcastCameraView, IIVSBroadcastCameraView>(
-    parentRef,
-    () => {
-      const reactTag = findNodeHandle(nativeViewRef.current);
+  useImperativeHandle<
+    IIVSBroadcastCameraView,
+    IIVSBroadcastCameraView
+  >(parentRef, () => {
+    const reactTag = findNodeHandle(nativeViewRef.current);
 
-      const dispatchViewManagerCommand = (
-        command: Command,
-        ...params: unknown[]
-      ) =>
-        UIManager.dispatchViewManagerCommand(
-          reactTag,
-          getCommandIdByPlatform(command),
-          params ?? []
-        );
+    const dispatchViewManagerCommand = (
+      command: Command,
+      ...params: unknown[]
+    ) =>
+      UIManager.dispatchViewManagerCommand(
+        reactTag,
+        getCommandIdByPlatform(command),
+        params ?? []
+      );
 
-      return {
-        start: (
-          options: Parameters<IIVSBroadcastCameraView['start']>[number] = {}
-        ) => dispatchViewManagerCommand(Command.Start, options),
-        stop: () => dispatchViewManagerCommand(Command.Stop),
-        /**
-         * @deprecated in favor of {@link cameraPosition}
-         */
-        swapCamera: () => dispatchViewManagerCommand(Command.SwapCamera),
-      };
-    },
-    []
-  );
+    return {
+      start: (
+        options: Parameters<IIVSBroadcastCameraView['start']>[number] = {}
+      ) => dispatchViewManagerCommand(Command.Start, options),
+      stop: () => dispatchViewManagerCommand(Command.Stop),
+      /**
+       * @deprecated in favor of {@link cameraPosition}
+       */
+      swapCamera: () => dispatchViewManagerCommand(Command.SwapCamera),
+    };
+  }, []);
 
   const onErrorHandler: IIVSBroadcastCameraNativeViewProps['onError'] = ({
     nativeEvent,
@@ -198,25 +184,25 @@ const IVSBroadcastCameraView = forwardRef<
     <RCTIVSBroadcastCameraView
       testID={NATIVE_VIEW_NAME}
       {...restProps}
-      ref={nativeViewRef}
-      isMuted={isMuted}
-      logLevel={logLevel}
-      sessionLogLevel={sessionLogLevel}
+      cameraPosition={cameraPosition}
       cameraPreviewAspectMode={cameraPreviewAspectMode}
       isCameraPreviewMirrored={isCameraPreviewMirrored}
-      cameraPosition={cameraPosition}
-      onError={onErrorHandler}
-      onBroadcastError={onBroadcastErrorHandler}
-      onIsBroadcastReady={onIsBroadcastReadyHandler}
-      onBroadcastAudioStats={onBroadcastAudioStatsHandler}
-      onBroadcastStateChanged={onBroadcastStateChangedHandler}
-      onBroadcastQualityChanged={onBroadcastQualityChangedHandler}
-      onNetworkHealthChanged={onNetworkHealthChangedHandler}
-      onTransmissionStatisticsChanged={onTransmissionStatisticsChangedHandler}
+      isMuted={isMuted}
+      logLevel={logLevel}
       onAudioSessionInterrupted={onAudioSessionInterruptedHandler}
       onAudioSessionResumed={onAudioSessionResumedHandler}
+      onBroadcastAudioStats={onBroadcastAudioStatsHandler}
+      onBroadcastError={onBroadcastErrorHandler}
+      onBroadcastQualityChanged={onBroadcastQualityChangedHandler}
+      onBroadcastStateChanged={onBroadcastStateChangedHandler}
+      onError={onErrorHandler}
+      onIsBroadcastReady={onIsBroadcastReadyHandler}
       onMediaServicesWereLost={onMediaServicesWereLostHandler}
       onMediaServicesWereReset={onMediaServicesWereResetHandler}
+      onNetworkHealthChanged={onNetworkHealthChangedHandler}
+      onTransmissionStatisticsChanged={onTransmissionStatisticsChangedHandler}
+      ref={nativeViewRef}
+      sessionLogLevel={sessionLogLevel}
     />
   );
 });
