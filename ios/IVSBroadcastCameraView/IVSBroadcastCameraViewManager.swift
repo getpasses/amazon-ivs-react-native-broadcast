@@ -1,4 +1,3 @@
-import AmazonIVSBroadcast
 import Foundation
 
 @objc(RCTIVSBroadcastCameraView)
