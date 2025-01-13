@@ -1,5 +1,8 @@
 import type { Component, ComponentType } from 'react';
 import type { NativeSyntheticEvent, ViewStyle, StyleProp } from 'react-native';
+import {NativeModules} from "react-native"
+
+const { IVSHelperModule } = NativeModules;
 
 export type ExtractComponentProps<T> = T extends
   | ComponentType<infer P>
@@ -235,3 +238,5 @@ export interface IIVSBroadcastCameraView {
    */
   swapCamera(): void;
 }
+export const getAvailableDevices: () => Promise<any> =
+  IVSHelperModule.getAvailableDevices;

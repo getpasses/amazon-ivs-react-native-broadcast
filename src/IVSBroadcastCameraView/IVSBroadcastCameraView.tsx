@@ -4,6 +4,7 @@ import {
   UIManager,
   findNodeHandle,
   requireNativeComponent,
+  NativeModules,
 } from 'react-native';
 
 import {
@@ -18,6 +19,18 @@ import {
   IIVSBroadcastCameraViewProps,
   IIVSBroadcastCameraNativeViewProps,
 } from './IVSBroadcastCameraView.types';
+
+const { IVSHelperModule } = NativeModules;
+
+export const getAvailableDevices = async () => {
+  try {
+    const devices = await IVSHelperModule.getAvailableDevices();
+    return devices;
+  } catch (error) {
+    console.error('Error fetching devices:', error);
+    throw error;
+  }
+};
 
 const isNumber = (value: unknown): value is number => typeof value === 'number';
 

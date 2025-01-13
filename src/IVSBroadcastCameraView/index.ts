@@ -10,5 +10,7 @@ export {
   ITransmissionStatistics,
   IBroadcastSessionError,
   IIVSBroadcastCameraView,
+  getAvailableDevices,
 } from './IVSBroadcastCameraView.types';
+
 export { default as IVSBroadcastCameraView } from './IVSBroadcastCameraView';

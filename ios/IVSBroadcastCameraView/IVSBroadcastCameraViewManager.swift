@@ -1,6 +1,7 @@
+import AmazonIVSBroadcast
 import Foundation
 
-@objc (RCTIVSBroadcastCameraView)
+@objc(RCTIVSBroadcastCameraView)
 class IVSBroadcastCameraViewManager: RCTViewManager {
   
   override func view() -> UIView! {
@@ -33,5 +34,22 @@ class IVSBroadcastCameraViewManager: RCTViewManager {
       component.swapCamera()
     }
   }
+  
+  @objc public func GET_AVAILABLE_DEVICES(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+     DispatchQueue.main.async {
+       let devices = IVSBroadcastSession.listAvailableDevices()
+       
+       let deviceList = devices.map { device -> [String: Any] in
+         return [
+          "id": device.deviceId,
+           "type": device.type.rawValue,
+           "position": device.position.rawValue
+         ]
+       }
+       
+       resolve(deviceList)
+     }
+   }
+  
 }
 
