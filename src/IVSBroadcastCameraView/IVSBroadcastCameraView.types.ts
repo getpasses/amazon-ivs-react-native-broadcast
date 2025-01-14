@@ -239,13 +239,12 @@ export interface IIVSBroadcastCameraView {
   /**
    * @deprecated in favor of {@link CameraPosition}
    */
-  swapCamera(): void;
+  swapCamera(urn: string): void;
 }
 
 export const getAvailableDevices = async () => {
   try {
     const devices = await IVSHelperModule.getAvailableDevices();
-    console.log('你大妹妹');
     return devices;
   } catch (error) {
     console.error('Error fetching devices:', error);
