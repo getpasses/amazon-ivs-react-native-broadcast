@@ -239,10 +239,27 @@ export interface IIVSBroadcastCameraView {
   swapCamera(urn: string): void;
 }
 
-export const getAvailableDevices = async () => {
+export interface Device {
+  id: string;
+  name: string;
+  position: number;
+  type: DeviceType;
+  urn: string;
+}
+
+export enum DeviceType {
+  Camera = 1,
+  Microphone = 2,
+}
+
+export interface DevicesProps {
+  devices: Device[];
+}
+
+export const getAvailableDevices = async (): Promise<Device[]> => {
   try {
     const devices = await IVSHelperModule.getAvailableDevices();
-    return devices;
+    return devices as Device[];
   } catch (error) {
     console.error('Error fetching devices:', error);
     throw error;
