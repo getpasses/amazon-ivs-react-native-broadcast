@@ -4,13 +4,16 @@ export {
   CameraPreviewAspectMode,
   NetworkHealth,
   BroadcastQuality,
+  getAvailableDevices,
+} from './IVSBroadcastCameraView/IVSBroadcastCameraView.types';
+
+export type {
   StateStatusUnion,
   StateChangedMetadata,
   IAudioStats,
   ITransmissionStatistics,
   IBroadcastSessionError,
   IIVSBroadcastCameraView,
-  getAvailableDevices,
 } from './IVSBroadcastCameraView/IVSBroadcastCameraView.types';
 
 export * from './IVSBroadcastCameraView';
