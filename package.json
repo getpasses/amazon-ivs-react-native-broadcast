@@ -3,7 +3,7 @@
   "version": "1.2.2",
   "description": "A React Native wrapper for the Amazon IVS iOS and Android broadcast SDKs",
   "main": "src/index",
-  "types": "src/IVSBroadcastCameraView/index.ts",
+  "types": "src/index.d.ts",
   "react-native": "src/index",
   "source": "src/index",
   "sdkVersion": {
@@ -57,8 +57,7 @@
     "@release-it/conventional-changelog": "^10.0.0",
     "@testing-library/react-native": "^13.0.0",
     "@types/jest": "^29.5.14",
-    "@types/react": "^19.0.6",
-    "@types/react-native": "^0.73.0",
+    "@types/react": "~18.3.12",
     "@typescript-eslint/eslint-plugin": "^8.19.1",
     "@typescript-eslint/parser": "^8.19.1",
     "commitlint": "^19.6.1",
