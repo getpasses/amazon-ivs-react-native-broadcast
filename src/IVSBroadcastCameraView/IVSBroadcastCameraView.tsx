@@ -44,7 +44,7 @@ export const getCommandIdByPlatform = (command: Command) => {
   }
 };
 
-const IVSBroadcastCameraView = forwardRef<
+export const IVSBroadcastCameraView = forwardRef<
   IIVSBroadcastCameraView,
   IIVSBroadcastCameraViewProps
 >((props, parentRef) => {
@@ -205,4 +205,3 @@ const IVSBroadcastCameraView = forwardRef<
   );
 });
 
-export default IVSBroadcastCameraView;

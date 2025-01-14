@@ -16,4 +16,4 @@ export type {
   IIVSBroadcastCameraView,
 } from './IVSBroadcastCameraView.types';
 
-export * from './IVSBroadcastCameraView';
+export { IVSBroadcastCameraView } from './IVSBroadcastCameraView';
