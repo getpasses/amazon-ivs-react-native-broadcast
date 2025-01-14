@@ -64,18 +64,6 @@ class IVSBroadcastSessionService: NSObject {
     }
   }
   
-//  private func getCameraPosition(_ cameraPositionName: NSString) -> IVSDevicePosition {
-//    switch(cameraPositionName) {
-//      case "front":
-//        return .front
-//      case "back":
-//        return .back
-//      default:
-//        assertionFailure("Does not support camera position: \(cameraPositionName)")
-//        return .back
-//    }
-//  }
-  
   private func getAudioSessionStrategy(_ audioSessionStrategyName: NSString) -> IVSBroadcastSession.AudioSessionStrategy {
     switch audioSessionStrategyName {
       case "recordOnly":
@@ -269,7 +257,6 @@ class IVSBroadcastSessionService: NSObject {
       self.broadcastSession?.exchangeOldDevice(attachedMicrophone, withNewDevice: nextMicrophoneDescriptorToSwap) { newDevice, _ in
         if let newMicrophone = newDevice {
           self.attachedMicrophoneUrn = newMicrophone.descriptor().urn
-          
         }
       }
     }
