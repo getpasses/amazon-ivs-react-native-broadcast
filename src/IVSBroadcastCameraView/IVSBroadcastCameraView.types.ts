@@ -236,9 +236,6 @@ type StartMethodOptions = Pick<IBaseProps, 'rtmpsUrl' | 'streamKey'>;
 export interface IIVSBroadcastCameraView {
   start(options?: StartMethodOptions): void;
   stop(): void;
-  /**
-   * @deprecated in favor of {@link CameraPosition}
-   */
   swapCamera(urn: string): void;
 }
 

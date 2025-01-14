@@ -35,5 +35,5 @@ RCT_EXPORT_VIEW_PROPERTY(onTransmissionStatisticsChanged, RCTDirectEventBlock)
 RCT_EXTERN_METHOD(START:(nonnull NSNumber *)node options:(NSDictionary)options)
 RCT_EXTERN_METHOD(STOP:(nonnull NSNumber *)node)
 
-RCT_EXTERN_METHOD(SWAP_CAMERA:(nonnull NSNumber *)node withUrn:(NSString *)urn)
+RCT_EXTERN_METHOD(SWAP_CAMERA:(nonnull NSNumber *)node urn:(NSString *)urn)
 @end
