@@ -3,7 +3,7 @@
   "version": "1.2.2",
   "description": "A React Native wrapper for the Amazon IVS iOS and Android broadcast SDKs",
   "main": "src/index",
-  "types": "src/index.d.ts",
+  "types": "src/IVSBroadcastCameraView/index.ts",
   "react-native": "src/index",
   "source": "src/index",
   "sdkVersion": {
