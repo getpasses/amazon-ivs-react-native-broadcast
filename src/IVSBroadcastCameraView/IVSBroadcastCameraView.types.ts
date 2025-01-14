@@ -2,9 +2,6 @@ import type { Component, ComponentType } from 'react';
 import type { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
 import { NativeModules } from 'react-native';
 
-console.log('NativeModules=====');
-console.log(NativeModules);
-
 const { IVSHelperModule } = NativeModules;
 
 export type ExtractComponentProps<T> = T extends
@@ -16,10 +13,8 @@ export type ExtractComponentProps<T> = T extends
 export enum Command {
   Start = 'START',
   Stop = 'STOP',
-  /**
-   * @deprecated in favor of {@link CameraPosition}
-   */
   SwapCamera = 'SWAP_CAMERA',
+  SwapMicrophone = 'SWAP_MICROPHONE',
 }
 
 export enum StateStatusEnum {
@@ -237,6 +232,7 @@ export interface IIVSBroadcastCameraView {
   start(options?: StartMethodOptions): void;
   stop(): void;
   swapCamera(urn: string): void;
+  swapMicrophone(urn: string): void;
 }
 
 export interface Device {

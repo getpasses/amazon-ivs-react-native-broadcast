@@ -35,4 +35,5 @@ RCT_EXTERN_METHOD(START:(nonnull NSNumber *)node options:(NSDictionary)options)
 RCT_EXTERN_METHOD(STOP:(nonnull NSNumber *)node)
 
 RCT_EXTERN_METHOD(SWAP_CAMERA:(nonnull NSNumber *)node urn:(NSString *)urn)
+RCT_EXTERN_METHOD(SWAP_MICROPHONE:(nonnull NSNumber *)node urn:(NSString *)urn)
 @end

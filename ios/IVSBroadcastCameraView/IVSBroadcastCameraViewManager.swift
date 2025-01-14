@@ -32,6 +32,13 @@ class IVSBroadcastCameraViewManager: RCTViewManager {
       let component = self.bridge.uiManager.view(forReactTag: node) as! IVSBroadcastCameraView
       component.swapCamera(urn! as String)
     }
-  }  
+  }
+  
+  @objc public func SWAP_MICROPHONE(_ node: NSNumber,urn: NSString?) {
+    DispatchQueue.main.async {
+      let component = self.bridge.uiManager.view(forReactTag: node) as! IVSBroadcastCameraView
+      component.swapMicrophone(urn! as String)
+    }
+  }
 }
 

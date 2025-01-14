@@ -94,6 +94,10 @@ const IVSBroadcastCameraView = forwardRef<
       ) => dispatchViewManagerCommand(Command.Start, options),
       stop: () => dispatchViewManagerCommand(Command.Stop),
       swapCamera: (urn:string) => dispatchViewManagerCommand(Command.SwapCamera,urn),
+      swapMicrophone: (urn:string) => {
+        alert(urn)
+        dispatchViewManagerCommand(Command.SwapMicrophone,urn)
+      },
     };
   }, []);
 

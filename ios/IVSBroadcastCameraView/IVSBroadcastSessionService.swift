@@ -142,16 +142,24 @@ class IVSBroadcastSessionService: NSObject {
     return self.initialCameraPosition == .front ? IVSPresets.devices().frontCamera() : IVSPresets.devices().backCamera()
   }
   
-  private func getNextCameraDescriptorToSwap(_ urn:String, _ attachedCamera : IVSDevice) -> IVSDeviceDescriptor? {
-    let attachedCameraPosition = attachedCamera.descriptor().position
+  private func getNextCameraDescriptorToSwap(_ urn:String) -> IVSDeviceDescriptor? {
     let availableCameraDevices = IVSBroadcastSession.listAvailableDevices().filter { $0.type == .camera && $0.urn.contains(urn) }
-    
-    
+  
     guard !availableCameraDevices.isEmpty else {
       return nil
     }
     
     return availableCameraDevices.first
+  }
+  
+  private func getNextMicrophoneDescriptorToSwap(_ urn:String) -> IVSDeviceDescriptor? {
+    let availableMicrophoneDevices = IVSBroadcastSession.listAvailableDevices().filter { $0.type == .microphone && $0.urn.contains(urn) }
+  
+    guard !availableMicrophoneDevices.isEmpty else {
+      return nil
+    }
+    
+    return availableMicrophoneDevices.first
   }
   
   private func getCameraPreview() -> IVSImagePreviewView? {
@@ -232,7 +240,7 @@ class IVSBroadcastSessionService: NSObject {
         return
       }
       
-      guard let nextCameraDescriptorToSwap = self.getNextCameraDescriptorToSwap(nextCameraUrn,attachedCamera) else {
+      guard let nextCameraDescriptorToSwap = self.getNextCameraDescriptorToSwap(nextCameraUrn) else {
         return
       }
       
@@ -243,6 +251,25 @@ class IVSBroadcastSessionService: NSObject {
           if let newCameraPreview = self.getCameraPreview() {
             onReceiveCameraPreview(newCameraPreview)
           }
+        }
+      }
+    }
+  }
+  
+  private func swapMicrophoneAsync(_ nextMicroUrn:String) {
+    self.broadcastSession?.awaitDeviceChanges { () -> Void in
+      guard let attachedMicrophone = self.getAttachedDeviceByUrn(self.attachedMicrophoneUrn) else {
+        return
+      }
+      
+      guard let nextMicrophoneDescriptorToSwap = self.getNextMicrophoneDescriptorToSwap(nextMicroUrn) else {
+        return
+      }
+      
+      self.broadcastSession?.exchangeOldDevice(attachedMicrophone, withNewDevice: nextMicrophoneDescriptorToSwap) { newDevice, _ in
+        if let newMicrophone = newDevice {
+          self.attachedMicrophoneUrn = newMicrophone.descriptor().urn
+          
         }
       }
     }
@@ -322,10 +349,17 @@ class IVSBroadcastSessionService: NSObject {
   }
   
   public func swapCamera(_ urn:String?,_ onReceiveCameraPreview: @escaping onReceiveCameraPreviewHandler) {
-    if let cameraUrn = urn {
+    if urn != nil {
       self.swapCameraAsync(urn!,onReceiveCameraPreview)
     } else {
       assertionFailure("Camera URN cannot be nil.")
+    }
+  }
+  public func swapMicrophone(_ urn:String?) {
+    if urn != nil {
+      self.swapMicrophoneAsync(urn!)
+    } else {
+      assertionFailure("Microphone URN cannot be nil.")
     }
   }
   
@@ -336,16 +370,6 @@ class IVSBroadcastSessionService: NSObject {
       }
     }
   }
-  
-//  public func setCameraPosition(_ cameraPosition: NSString?, _ onReceiveCameraPreview: @escaping onReceiveCameraPreviewHandler) {
-//    if let cameraPositionName = cameraPosition {
-//      if (self.isInitialized()) {
-//        self.swapCameraAsync(onReceiveCameraPreview)
-//      } else {
-//        self.initialCameraPosition = self.getCameraPosition(cameraPositionName)
-//      }
-//    }
-//  }
   
   public func setAttachedMicrophoneUrn(_ urn: NSString?) {
     if let microphoneUrn = urn {
