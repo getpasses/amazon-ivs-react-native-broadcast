@@ -21,11 +21,11 @@ class IVSBroadcastCameraView: UIView {
       self.broadcastSession.setCameraPreviewAspectMode(cameraPreviewAspectMode, self.onReceiveCameraPreviewHandler)
     }
   }
-  @objc var cameraPosition: NSString? {
-    didSet {
-      self.broadcastSession.setCameraPosition(cameraPosition, self.onReceiveCameraPreviewHandler)
-    }
-  }
+//  @objc var cameraPosition: NSString? {
+//    didSet {
+//      self.broadcastSession.setCameraPosition(cameraPosition, self.onReceiveCameraPreviewHandler)
+//    }
+//  }
   @objc var sessionLogLevel: NSString? {
     didSet {
       self.broadcastSession.setSessionLogLevel(sessionLogLevel)
