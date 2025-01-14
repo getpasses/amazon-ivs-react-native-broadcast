@@ -1,15 +1,19 @@
-export { default as IVSBroadcastCameraView } from './IVSBroadcastCameraView';
 export {
-  BroadcastQuality,
+  LogLevel,
   CameraPosition,
   CameraPreviewAspectMode,
+  NetworkHealth,
+  BroadcastQuality,
   getAvailableDevices,
+} from './IVSBroadcastCameraView.types';
+
+export type {
+  StateStatusUnion,
+  StateChangedMetadata,
   IAudioStats,
+  ITransmissionStatistics,
   IBroadcastSessionError,
   IIVSBroadcastCameraView,
-  ITransmissionStatistics,
-  LogLevel,
-  NetworkHealth,
-  StateChangedMetadata,
-  StateStatusUnion,
 } from './IVSBroadcastCameraView.types';
+
+export * from './IVSBroadcastCameraView';
