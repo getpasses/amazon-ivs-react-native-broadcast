@@ -1,13 +1,13 @@
 export {
-  LogLevel,
-  CameraPosition,
-  CameraPreviewAspectMode,
-  NetworkHealth,
-  BroadcastQuality,
   getAvailableDevices,
 } from './IVSBroadcastCameraView/IVSBroadcastCameraView.types';
 
 export type {
+  LogLevel,
+  CameraPreviewAspectMode,
+  CameraPosition,
+  NetworkHealth,
+  BroadcastQuality,
   StateStatusUnion,
   StateChangedMetadata,
   IAudioStats,
