@@ -25,6 +25,7 @@ RCT_EXPORT_METHOD(getAvailableDevices:(RCTPromiseResolveBlock)resolve reject:(RC
       [deviceList addObject:@{
         @"id": device.deviceId,
         @"name": device.friendlyName,
+        @"urn": device.urn,
         @"type": @(device.type),
         @"position": @(device.position)
       }];

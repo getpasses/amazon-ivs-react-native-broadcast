@@ -93,10 +93,7 @@ const IVSBroadcastCameraView = forwardRef<
         options: Parameters<IIVSBroadcastCameraView['start']>[number] = {}
       ) => dispatchViewManagerCommand(Command.Start, options),
       stop: () => dispatchViewManagerCommand(Command.Stop),
-      /**
-       * @deprecated in favor of {@link cameraPosition}
-       */
-      swapCamera: () => dispatchViewManagerCommand(Command.SwapCamera),
+      swapCamera: (urn:string) => dispatchViewManagerCommand(Command.SwapCamera,urn),
     };
   }, []);
 

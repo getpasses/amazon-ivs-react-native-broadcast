@@ -205,6 +205,8 @@ class IVSBroadcastSessionService: NSObject {
     }
   }
   
+  
+  
   private func setCustomAudioConfig() throws {
     guard let audioConfig = self.customAudioConfig else { return }
     
@@ -318,9 +320,13 @@ class IVSBroadcastSessionService: NSObject {
     self.broadcastSession?.stop()
   }
   
-  @available(*, message: "@Deprecated in favor of setCameraPosition method.")
-  public func swapCamera(_ onReceiveCameraPreview: @escaping onReceiveCameraPreviewHandler) {
-    self.swapCameraAsync(onReceiveCameraPreview)
+  public func swapCamera(_ urn:String?,_ onReceiveCameraPreview: @escaping onReceiveCameraPreviewHandler) {
+    if let cameraUrn = urn {
+      self.attachedCameraUrn = cameraUrn as String
+      self.swapCameraAsync(onReceiveCameraPreview)
+    } else {
+      assertionFailure("Camera URN cannot be nil.")
+    }
   }
   
   public func getCameraPreviewAsync(_ onReceiveCameraPreview: @escaping onReceiveCameraPreviewHandler) {
@@ -340,6 +346,15 @@ class IVSBroadcastSessionService: NSObject {
       }
     }
   }
+  
+  public func setAttachedMicrophoneUrn(_ urn: NSString?) {
+    if let microphoneUrn = urn {
+      self.attachedMicrophoneUrn = microphoneUrn as String
+    } else {
+      assertionFailure("Microphone URN cannot be nil.")
+    }
+  }
+
   
   public func setCameraPreviewAspectMode(_ aspectMode: NSString?, _ onReceiveCameraPreview: @escaping onReceiveCameraPreviewHandler) {
     if let aspectModeName = aspectMode {

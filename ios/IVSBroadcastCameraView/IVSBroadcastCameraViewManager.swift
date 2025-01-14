@@ -1,3 +1,4 @@
+import AmazonIVSBroadcast
 import Foundation
 
 @objc(RCTIVSBroadcastCameraView)
@@ -26,11 +27,10 @@ class IVSBroadcastCameraViewManager: RCTViewManager {
     }
   }
   
-  @available(*, message: "@Deprecated in favor of cameraPosition prop.")
-  @objc public func SWAP_CAMERA(_ node: NSNumber) {
+  @objc public func SWAP_CAMERA(_ node: NSNumber,urn: NSString?) {
     DispatchQueue.main.async {
       let component = self.bridge.uiManager.view(forReactTag: node) as! IVSBroadcastCameraView
-      component.swapCamera()
+      component.swapCamera(urn! as String)
     }
   }  
 }

@@ -2,6 +2,9 @@ import type { Component, ComponentType } from 'react';
 import type { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
 import { NativeModules } from 'react-native';
 
+console.log('NativeModules=====');
+console.log(NativeModules);
+
 const { IVSHelperModule } = NativeModules;
 
 export type ExtractComponentProps<T> = T extends
@@ -242,6 +245,7 @@ export interface IIVSBroadcastCameraView {
 export const getAvailableDevices = async () => {
   try {
     const devices = await IVSHelperModule.getAvailableDevices();
+    console.log('你大妹妹');
     return devices;
   } catch (error) {
     console.error('Error fetching devices:', error);
