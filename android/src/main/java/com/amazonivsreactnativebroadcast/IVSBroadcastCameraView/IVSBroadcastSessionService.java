@@ -362,6 +362,7 @@ public class IVSBroadcastSessionService {
       throw new RuntimeException("Broadcast session has been already initialized.");
     } else {
       preInitialization();
+      config.autoReconnect.enabled = true;
 
       broadcastSession = new BroadcastSession(
         mReactContext,

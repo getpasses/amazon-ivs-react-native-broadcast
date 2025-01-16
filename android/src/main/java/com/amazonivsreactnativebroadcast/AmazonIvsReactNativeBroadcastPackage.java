@@ -1,5 +1,6 @@
 package com.amazonivsreactnativebroadcast;
 
+import com.amazonivsreactnativebroadcast.IVSBroadcastCameraView.IVSHelperModule;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;

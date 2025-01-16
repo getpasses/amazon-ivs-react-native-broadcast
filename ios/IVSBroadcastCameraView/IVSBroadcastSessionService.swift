@@ -293,6 +293,7 @@ class IVSBroadcastSessionService: NSObject {
   public func initiate() throws {
     if (!self.isInitialized()) {
       try self.preInitiation()
+      self.config.autoReconnect.enabled = true
       let initialDeviceDescriptorList = getInitialDeviceDescriptorList()
       
       self.broadcastSession = try IVSBroadcastSession(
@@ -302,6 +303,7 @@ class IVSBroadcastSessionService: NSObject {
       )
       
       self.saveInitialDevicesUrn(initialDeviceDescriptorList)
+      
       self.postInitiation()
     } else {
       assertionFailure("Broadcast session has been already initialized.")
