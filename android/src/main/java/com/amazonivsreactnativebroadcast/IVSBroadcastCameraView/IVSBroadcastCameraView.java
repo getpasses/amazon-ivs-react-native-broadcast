@@ -201,10 +201,6 @@ public class IVSBroadcastCameraView extends FrameLayout implements LifecycleEven
     ivsBroadcastSession.setIsCameraPreviewMirrored(isCameraPreviewMirrored, this::onReceiveCameraPreviewHandler);
   }
 
-  protected void setCameraPosition(String cameraPosition) {
-    ivsBroadcastSession.setCameraPosition(cameraPosition, this::onReceiveCameraPreviewHandler);
-  }
-
   protected void setCameraPreviewAspectMode(String cameraPreviewAspectMode) {
     ivsBroadcastSession.setCameraPreviewAspectMode(cameraPreviewAspectMode, this::onReceiveCameraPreviewHandler);
   }

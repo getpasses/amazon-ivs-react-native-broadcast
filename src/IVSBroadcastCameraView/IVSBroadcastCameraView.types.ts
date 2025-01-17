@@ -247,6 +247,29 @@ export enum DeviceType {
   Camera = 1,
   Microphone = 2,
 }
+const DeviceTypeMapping: { [key: string]: DeviceType } = {
+  CAMERA: DeviceType.Camera,
+  MICROPHONE: DeviceType.Microphone,
+}
+
+const DevicePositionMapping: { [key: string]: DeviceType } = {
+  FRONT: 1,
+  BACK: 2,
+}
+
+const normalizeDeviceType = (type: string | DeviceType): DeviceType => {
+  if (typeof type === 'string') {
+    return DeviceTypeMapping[type] || DeviceType.Camera;
+  }
+  return type;
+}
+
+const normalizeDevicePosition = (position: string | DeviceType): DeviceType => {
+  if (typeof position === 'string') {
+    return DevicePositionMapping[position] || 3;
+  }
+  return position;
+}
 
 export interface DevicesProps {
   devices: Device[];
@@ -255,7 +278,12 @@ export interface DevicesProps {
 export const getAvailableDevices = async (): Promise<Device[]> => {
   try {
     const devices = await IVSHelperModule.getAvailableDevices();
-    return devices as Device[];
+    const normalizedDevices: Device[] = devices.map((device:Device) => ({
+      ...device,
+      type: normalizeDeviceType(device.type),
+      position: normalizeDevicePosition(device.position)
+    }));
+    return normalizedDevices;
   } catch (error) {
     console.error('Error fetching devices:', error);
     throw error;

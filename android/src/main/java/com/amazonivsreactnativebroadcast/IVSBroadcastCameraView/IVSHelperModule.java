@@ -6,14 +6,14 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Arguments;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 import com.amazonaws.ivs.broadcast.*;
-import com.facebook.react.uimanager.ThemedReactContext;
+
 
 public class IVSHelperModule extends ReactContextBaseJavaModule {
   private ReactApplicationContext mReactContext;
@@ -31,21 +31,20 @@ public class IVSHelperModule extends ReactContextBaseJavaModule {
   public void getAvailableDevices(Promise promise) {
     try {
       List<Device.Descriptor> devices = Arrays.asList(BroadcastSession.listAvailableDevices(mReactContext));
-      List<Map<String, Object>> deviceList = new ArrayList<>();
+      WritableArray deviceArray = Arguments.createArray();
 
       for (Device.Descriptor device : devices) {
-        Map<String, Object> deviceMap = new HashMap<>();
-        deviceMap.put("id", device.deviceId);
-        deviceMap.put("name", device.friendlyName);
-        deviceMap.put("urn", device.urn);
-        deviceMap.put("type", device.type);
-        deviceMap.put("position", device.position);
+        WritableMap deviceMap = Arguments.createMap();
+        deviceMap.putString("id", device.deviceId);
+        deviceMap.putString("name", device.friendlyName);
+        deviceMap.putString("urn", device.urn);
+        deviceMap.putString("type", device.type != null ? device.type.toString() : null);
+        deviceMap.putString("position", device.position != null ? device.position.toString() : null);
 
-        Log.d("IVSHelperModule", "Device: " + device.friendlyName);
-        deviceList.add(deviceMap);
+        deviceArray.pushMap(deviceMap);
       }
 
-      promise.resolve(deviceList);
+      promise.resolve(deviceArray);
     } catch (Exception e) {
       Log.e("IVSHelperModule", "Error fetching devices: ", e);
       promise.reject("DEVICE_ERROR", "Error fetching devices", e);
