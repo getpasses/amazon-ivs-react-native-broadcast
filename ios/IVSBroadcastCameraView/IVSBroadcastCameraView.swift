@@ -21,11 +21,6 @@ class IVSBroadcastCameraView: UIView {
       self.broadcastSession.setCameraPreviewAspectMode(cameraPreviewAspectMode, self.onReceiveCameraPreviewHandler)
     }
   }
-  @objc var cameraPosition: NSString? {
-    didSet {
-      self.broadcastSession.setCameraPosition(cameraPosition, self.onReceiveCameraPreviewHandler)
-    }
-  }
   @objc var sessionLogLevel: NSString? {
     didSet {
       self.broadcastSession.setSessionLogLevel(sessionLogLevel)
@@ -218,8 +213,10 @@ class IVSBroadcastCameraView: UIView {
     self.broadcastSession.stop()
   }
   
-  @available(*, message: "@Deprecated in favor of cameraPosition prop.")
-  public func swapCamera() {
-    self.broadcastSession.swapCamera(self.onReceiveCameraPreviewHandler)
+  public func swapCamera(_ urn: String) {
+    self.broadcastSession.swapCamera(urn,self.onReceiveCameraPreviewHandler)
+  }
+  public func swapMicrophone(_ urn: String) {
+    self.broadcastSession.swapMicrophone(urn)
   }
 }
