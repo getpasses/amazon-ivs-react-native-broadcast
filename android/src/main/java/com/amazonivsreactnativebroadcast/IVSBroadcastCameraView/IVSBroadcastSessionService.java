@@ -25,7 +25,7 @@ public class IVSBroadcastSessionService {
   private ThemedReactContext mReactContext;
 
   private boolean isInitialMuted = false;
-  private Device.Descriptor.Position initialCameraPosition = Device.Descriptor.Position.BACK;
+  private Device.Descriptor.Position initialCameraPosition = Device.Descriptor.Position.FRONT;
   private BroadcastConfiguration.LogLevel initialSessionLogLevel = BroadcastConfiguration.LogLevel.ERROR;
   private boolean isCameraPreviewMirrored = false;
   private BroadcastConfiguration.AspectMode cameraPreviewAspectMode = BroadcastConfiguration.AspectMode.NONE;
@@ -363,6 +363,11 @@ public class IVSBroadcastSessionService {
     } else {
       preInitialization();
 
+      config = config.changing($ -> {
+        $.autoReconnect.setEnabled(true);
+        return $;
+      });
+
       broadcastSession = new BroadcastSession(
         mReactContext,
         broadcastSessionListener,
@@ -409,14 +414,6 @@ public class IVSBroadcastSessionService {
     broadcastSession.awaitDeviceChanges(() -> {
       callback.run(getCameraPreview());
     });
-  }
-
-  public void setCameraPosition(String cameraPositionName, CameraPreviewHandler callback) {
-    if (isInitialized()) {
-      swapCameraAsync(callback);
-    } else {
-      initialCameraPosition = getCameraPosition(cameraPositionName);
-    }
   }
 
   public void setCameraPreviewAspectMode(String cameraPreviewAspectModeName, CameraPreviewHandler callback) {

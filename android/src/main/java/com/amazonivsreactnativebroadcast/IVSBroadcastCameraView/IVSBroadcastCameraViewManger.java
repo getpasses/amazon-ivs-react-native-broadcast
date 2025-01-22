@@ -77,12 +77,6 @@ public class IVSBroadcastCameraViewManger extends ViewGroupManager<IVSBroadcastC
   public void setIsCameraPreviewMirrored(@NonNull IVSBroadcastCameraView view, boolean isCameraPreviewMirrored) {
     view.setIsCameraPreviewMirrored(isCameraPreviewMirrored);
   }
-
-  @ReactProp(name = "cameraPosition")
-  public void setCameraPosition(@NonNull IVSBroadcastCameraView view, String cameraPosition) {
-    view.setCameraPosition(cameraPosition);
-  }
-
   @ReactProp(name = "cameraPreviewAspectMode")
   public void setCameraPreviewAspectMode(@NonNull IVSBroadcastCameraView view, String cameraPreviewAspectMode) {
     view.setCameraPreviewAspectMode(cameraPreviewAspectMode);
