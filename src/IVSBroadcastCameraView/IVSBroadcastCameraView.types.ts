@@ -1,5 +1,8 @@
 import type { Component, ComponentType } from 'react';
-import type { NativeSyntheticEvent, ViewStyle, StyleProp } from 'react-native';
+import type { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import { NativeModules } from 'react-native';
+
+const { IVSHelperModule } = NativeModules;
 
 export type ExtractComponentProps<T> = T extends
   | ComponentType<infer P>
@@ -10,10 +13,8 @@ export type ExtractComponentProps<T> = T extends
 export enum Command {
   Start = 'START',
   Stop = 'STOP',
-  /**
-   * @deprecated in favor of {@link CameraPosition}
-   */
   SwapCamera = 'SWAP_CAMERA',
+  SwapMicrophone = 'SWAP_MICROPHONE',
 }
 
 export enum StateStatusEnum {
@@ -190,6 +191,8 @@ interface IBaseProps {
   readonly isCameraPreviewMirrored?: boolean;
   readonly cameraPosition?: CameraPosition;
   readonly isMuted?: boolean;
+  readonly currentCameraUrn?: string
+  readonly currentMicrophoneUrn?: string
 }
 
 export interface IEventHandlers {
@@ -230,8 +233,61 @@ type StartMethodOptions = Pick<IBaseProps, 'rtmpsUrl' | 'streamKey'>;
 export interface IIVSBroadcastCameraView {
   start(options?: StartMethodOptions): void;
   stop(): void;
-  /**
-   * @deprecated in favor of {@link CameraPosition}
-   */
-  swapCamera(): void;
+  swapCamera(urn: string): void;
+  swapMicrophone(urn: string): void;
 }
+
+export interface Device {
+  id: string;
+  name: string;
+  position: number;
+  type: DeviceType;
+  urn: string;
+}
+
+export enum DeviceType {
+  Camera = 1,
+  Microphone = 2,
+}
+const DeviceTypeMapping: { [key: string]: DeviceType } = {
+  CAMERA: DeviceType.Camera,
+  MICROPHONE: DeviceType.Microphone,
+}
+
+const DevicePositionMapping: { [key: string]: DeviceType } = {
+  FRONT: 1,
+  BACK: 2,
+}
+
+const normalizeDeviceType = (type: string | DeviceType): DeviceType => {
+  if (typeof type === 'string') {
+    return DeviceTypeMapping[type] || DeviceType.Camera;
+  }
+  return type;
+}
+
+const normalizeDevicePosition = (position: string | DeviceType): DeviceType => {
+  if (typeof position === 'string') {
+    return DevicePositionMapping[position] || 3;
+  }
+  return position;
+}
+
+export interface DevicesProps {
+  devices: Device[];
+}
+
+export const getAvailableDevices = async (): Promise<Device[]> => {
+  try {
+    const devices = await IVSHelperModule.getAvailableDevices();
+    const normalizedDevices: Device[] = devices.map((device:Device) => ({
+      ...device,
+      type: normalizeDeviceType(device.type),
+      position: normalizeDevicePosition(device.position)
+    }));
+    return normalizedDevices;
+  } catch (error) {
+    console.error('Error fetching devices:', error);
+    throw error;
+  }
+};

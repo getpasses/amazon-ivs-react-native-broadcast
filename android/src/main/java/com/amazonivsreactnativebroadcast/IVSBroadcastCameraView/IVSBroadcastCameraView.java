@@ -1,5 +1,7 @@
 package com.amazonivsreactnativebroadcast.IVSBroadcastCameraView;
 
+import android.graphics.Color;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -17,8 +19,8 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 public class IVSBroadcastCameraView extends FrameLayout implements LifecycleEventListener {
   public static final String START_COMMAND_NAME = "START";
   public static final String STOP_COMMAND_NAME = "STOP";
-  @Deprecated
   public static final String SWAP_CAMERA_COMMAND_NAME = "SWAP_CAMERA";
+  public static final String SWAP_MICROPHONE_COMMAND_NAME = "SWAP_MICROPHONE";
 
   public enum Events {
     ON_IS_BROADCAST_READY("onIsBroadcastReady"),
@@ -58,8 +60,17 @@ public class IVSBroadcastCameraView extends FrameLayout implements LifecycleEven
   }
 
   private void addCameraPreview(@NonNull View preview) {
+    this.setBackgroundColor(Color.BLACK);
+
+    if (preview instanceof TextureView) {
+        ((TextureView) preview).setOpaque(false);
+        ((TextureView) preview).setLayerType(View.LAYER_TYPE_HARDWARE, null);
+    }
+
     LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
     addView(preview, layoutParams);
+    preview.bringToFront();
+
     reLayout(preview);
     sendIsReadyEvent();
   }
@@ -179,10 +190,17 @@ public class IVSBroadcastCameraView extends FrameLayout implements LifecycleEven
     }
   }
 
-  @Deprecated
-  protected void swapCamera() {
+  protected void swapCamera(String urn) {
     try {
-      ivsBroadcastSession.swapCamera(this::onReceiveCameraPreviewHandler);
+      ivsBroadcastSession.swapCamera(urn,this::onReceiveCameraPreviewHandler);
+    } catch (RuntimeException error) {
+      sendErrorEvent(error.toString());
+    }
+  }
+
+  protected void swapMicrophone(String urn) {
+    try {
+      ivsBroadcastSession.swapMicrophone(urn);
     } catch (RuntimeException error) {
       sendErrorEvent(error.toString());
     }
@@ -197,12 +215,15 @@ public class IVSBroadcastCameraView extends FrameLayout implements LifecycleEven
     ivsBroadcastSession.setIsMuted(isMuted);
   }
 
-  protected void setIsCameraPreviewMirrored(boolean isCameraPreviewMirrored) {
-    ivsBroadcastSession.setIsCameraPreviewMirrored(isCameraPreviewMirrored, this::onReceiveCameraPreviewHandler);
+  protected void setCurrentCameraUrn(String cameraUrn) {
+    ivsBroadcastSession.setCurrentCameraUrn(cameraUrn, this::onReceiveCameraPreviewHandler);
+  }
+  protected void setCurrentMicrophoneUrn(String currentMicrophoneUrn) {
+    ivsBroadcastSession.setCurrentMicrophoneUrn(currentMicrophoneUrn);
   }
 
-  protected void setCameraPosition(String cameraPosition) {
-    ivsBroadcastSession.setCameraPosition(cameraPosition, this::onReceiveCameraPreviewHandler);
+  protected void setIsCameraPreviewMirrored(boolean isCameraPreviewMirrored) {
+    ivsBroadcastSession.setIsCameraPreviewMirrored(isCameraPreviewMirrored, this::onReceiveCameraPreviewHandler);
   }
 
   protected void setCameraPreviewAspectMode(String cameraPreviewAspectMode) {
