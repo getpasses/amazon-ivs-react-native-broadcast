@@ -10,6 +10,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 
+import java.util.Arrays;
+import java.util.List;
+
 @FunctionalInterface
 interface CameraPreviewHandler {
   void run(ImagePreviewView cameraPreview);
@@ -282,17 +285,36 @@ public class IVSBroadcastSessionService {
     }
   }
 
-  private void swapCameraAsync(CameraPreviewHandler callback) {
+  private void swapCameraAsync(String urn, CameraPreviewHandler callback) {
     broadcastSession.awaitDeviceChanges(() -> {
-      for (Device.Descriptor deviceDescriptor : broadcastSession.listAvailableDevices(mReactContext)) {
-        if (deviceDescriptor.type == Device.Descriptor.DeviceType.CAMERA && deviceDescriptor.position != attachedCameraDescriptor.position) {
-          broadcastSession.exchangeDevices(attachedCameraDescriptor, deviceDescriptor, newCamera -> {
-            attachedCameraDescriptor = newCamera.getDescriptor();
-            callback.run(getCameraPreview());
-          });
+      Device.Descriptor[] totalAvailableDevices = BroadcastSession.listAvailableDevices(mReactContext);
+      Device.Descriptor targetDevice = null;
+      for (Device.Descriptor device : totalAvailableDevices) {
+        if (device.urn.contains(urn)) {
+          targetDevice = device;
           break;
         }
       }
+
+      broadcastSession.exchangeDevices(attachedCameraDescriptor, targetDevice, newCamera -> {
+        attachedCameraDescriptor = newCamera.getDescriptor();
+        callback.run(getCameraPreview());
+      });
+    });
+  }
+  private void swapMicrophoneAsync(String urn) {
+    broadcastSession.awaitDeviceChanges(() -> {
+      Device.Descriptor[] totalAvailableDevices = BroadcastSession.listAvailableDevices(mReactContext);
+      Device.Descriptor targetDevice = null;
+      for (Device.Descriptor device : totalAvailableDevices) {
+        if (device.urn.contains(urn)) {
+          targetDevice = device;
+          break;
+        }
+      }
+      broadcastSession.exchangeDevices(attachedMicrophoneDescriptor, targetDevice, newMicrophone -> {
+        attachedMicrophoneDescriptor = newMicrophone.getDescriptor();
+      });
     });
   }
 
@@ -405,9 +427,11 @@ public class IVSBroadcastSessionService {
     broadcastSession.stop();
   }
 
-  @Deprecated
-  public void swapCamera(CameraPreviewHandler callback) {
-    swapCameraAsync(callback);
+  public void swapCamera(String urn,CameraPreviewHandler callback) {
+    swapCameraAsync(urn,callback);
+  }
+  public void swapMicrophone(String urn) {
+    swapMicrophoneAsync(urn);
   }
 
   public void getCameraPreviewAsync(CameraPreviewHandler callback) {
