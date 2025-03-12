@@ -204,6 +204,13 @@ public class IVSBroadcastCameraView extends FrameLayout implements LifecycleEven
     ivsBroadcastSession.setIsMuted(isMuted);
   }
 
+  protected void setCurrentCameraUrn(String cameraUrn) {
+    ivsBroadcastSession.setCurrentCameraUrn(cameraUrn, this::onReceiveCameraPreviewHandler);
+  }
+  protected void setCurrentMicrophoneUrn(String currentMicrophoneUrn) {
+    ivsBroadcastSession.setCurrentMicrophoneUrn(currentMicrophoneUrn, this::onReceiveCameraPreviewHandler);
+  }
+
   protected void setIsCameraPreviewMirrored(boolean isCameraPreviewMirrored) {
     ivsBroadcastSession.setIsCameraPreviewMirrored(isCameraPreviewMirrored, this::onReceiveCameraPreviewHandler);
   }

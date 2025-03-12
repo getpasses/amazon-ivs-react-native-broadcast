@@ -191,6 +191,8 @@ interface IBaseProps {
   readonly isCameraPreviewMirrored?: boolean;
   readonly cameraPosition?: CameraPosition;
   readonly isMuted?: boolean;
+  readonly currentCameraUrn: string
+  readonly currentMicrophoneUrn?: string
 }
 
 export interface IEventHandlers {
