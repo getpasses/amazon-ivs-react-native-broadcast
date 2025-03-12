@@ -257,6 +257,7 @@ public class IVSBroadcastSessionService {
         selectedDevices.addAll(Arrays.asList(defaultMicrophones));
     }
 
+
     return selectedDevices.toArray(new Device.Descriptor[0]);
 }
 
@@ -403,6 +404,7 @@ public class IVSBroadcastSessionService {
       if (deviceDescriptor.type == Device.Descriptor.DeviceType.CAMERA) {
         attachedCameraDescriptor = deviceDescriptor;
       } else if (deviceDescriptor.type == Device.Descriptor.DeviceType.MICROPHONE) {
+        System.out.println("deviceDescriptor====" + deviceDescriptor.urn);
         attachedMicrophoneDescriptor = deviceDescriptor;
       }
     }
