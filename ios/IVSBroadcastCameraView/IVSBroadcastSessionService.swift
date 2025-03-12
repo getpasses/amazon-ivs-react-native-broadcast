@@ -362,24 +362,29 @@ class IVSBroadcastSessionService: NSObject {
     self.broadcastSession?.stop()
   }
 
-  public func setCurrentCameraUrn(_ cameraUrn: NSString?, _ onReceiveCameraPreview: @escaping onReceiveCameraPreviewHandler) {
-    if let cameraUrnName = cameraUrn as? String{
-      if (self.isInitialized()) {
-        self.swapCameraAsync(cameraUrn,onReceiveCameraPreview)
-      } else {
-        self.initialCameraUrn = cameraUrn
-      }
+public func setCurrentCameraUrn(_ cameraUrn: NSString?, _ onReceiveCameraPreview: @escaping onReceiveCameraPreviewHandler) {
+    guard let cameraUrnStr = cameraUrn as? String else {
+        assertionFailure("Camera URN cannot be nil or of incorrect type.")
+        return
+    }
+    if (self.isInitialized()) {
+        self.swapCameraAsync(cameraUrnStr, onReceiveCameraPreview)
+    } else {
+        self.initialCameraUrn = cameraUrnStr
     }
   }
 
-  public func setCurrentMicrophoneUrn(_ microphoneUrn: NSString?) {
-    if microphoneUrn != nil {
-      self.swapCameraAsync(urn!,onReceiveCameraPreview)
-    } else {
-      assertionFailure("Camera URN cannot be nil.")
+public func setCurrentMicrophoneUrn(_ microphoneUrn: NSString?) {
+    guard let microphoneUrnStr = microphoneUrn as? String else {
+        assertionFailure("Microphone URN cannot be nil or of incorrect type.")
+        return
     }
-    
-  }
+    if self.isInitialized() {
+        self.swapMicrophone(microphoneUrnStr)
+    } else {
+        self.initialMicrophoneUrn = microphoneUrnStr
+    }
+}
   
   public func swapCamera(_ urn:String?,_ onReceiveCameraPreview: @escaping onReceiveCameraPreviewHandler) {
     if urn != nil {
