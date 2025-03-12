@@ -21,6 +21,9 @@ class IVSBroadcastSessionService: NSObject {
   
   private var attachedCameraUrn: String = ""
   private var attachedMicrophoneUrn: String = ""
+
+  private var initialCameraUrn: String = ""
+  private var initialMicrophoneUrn: String = ""
   
   private var broadcastSession: IVSBroadcastSession?
   private var config = IVSBroadcastConfiguration()
@@ -126,9 +129,31 @@ class IVSBroadcastSessionService: NSObject {
     }
   }
   
-  private func getInitialDeviceDescriptorList() -> [IVSDeviceDescriptor] {
-    return self.initialCameraPosition == .front ? IVSPresets.devices().frontCamera() : IVSPresets.devices().backCamera()
-  }
+ private func getInitialDeviceDescriptorList() -> [IVSDeviceDescriptor] {
+    let availableDevices = IVSBroadcastSession.listAvailableDevices()
+    var selectedDevices: [IVSDeviceDescriptor] = []
+
+    if !initialCameraUrn.isEmpty {
+        if let cameraDevice = availableDevices.first(where: { $0.urn == initialCameraUrn && $0.type == .camera }) {
+            selectedDevices.append(cameraDevice)
+        }
+    } else {
+        let defaultCameras = initialCameraPosition == .back ? IVSPresets.devices().backCamera() : IVSPresets.devices().frontCamera()
+        selectedDevices.append(contentsOf: defaultCameras)
+    }
+
+  
+    if !initialMicrophoneUrn.isEmpty {
+        if let microphoneDevice = availableDevices.first(where: { $0.urn == initialMicrophoneUrn && $0.type == .microphone }) {
+            selectedDevices.append(microphoneDevice)
+        }
+    } else {
+        let defaultMicrophones = IVSPresets.devices().microphone()
+        selectedDevices.append(contentsOf: defaultMicrophones)
+    }
+
+    return selectedDevices
+}
   
   private func getNextCameraDescriptorToSwap(_ urn:String) -> IVSDeviceDescriptor? {
     let availableCameraDevices = IVSBroadcastSession.listAvailableDevices().filter { $0.type == .camera && $0.urn.contains(urn) }
@@ -336,6 +361,30 @@ class IVSBroadcastSessionService: NSObject {
   public func stop() {
     self.broadcastSession?.stop()
   }
+
+public func setCurrentCameraUrn(_ cameraUrn: NSString?, _ onReceiveCameraPreview: @escaping onReceiveCameraPreviewHandler) {
+    guard let cameraUrnStr = cameraUrn as? String else {
+        assertionFailure("Camera URN cannot be nil or of incorrect type.")
+        return
+    }
+    if (self.isInitialized()) {
+        self.swapCameraAsync(cameraUrnStr, onReceiveCameraPreview)
+    } else {
+        self.initialCameraUrn = cameraUrnStr
+    }
+  }
+
+public func setCurrentMicrophoneUrn(_ microphoneUrn: NSString?) {
+    guard let microphoneUrnStr = microphoneUrn as? String else {
+        assertionFailure("Microphone URN cannot be nil or of incorrect type.")
+        return
+    }
+    if self.isInitialized() {
+        self.swapMicrophone(microphoneUrnStr)
+    } else {
+        self.initialMicrophoneUrn = microphoneUrnStr
+    }
+}
   
   public func swapCamera(_ urn:String?,_ onReceiveCameraPreview: @escaping onReceiveCameraPreviewHandler) {
     if urn != nil {

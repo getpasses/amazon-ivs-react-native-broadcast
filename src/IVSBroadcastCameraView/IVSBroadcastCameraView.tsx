@@ -67,6 +67,8 @@ export const IVSBroadcastCameraView = forwardRef<
     cameraPreviewAspectMode = 'none',
     logLevel = 'error',
     sessionLogLevel = 'error',
+    currentCameraUrn,
+    currentMicrophoneUrn,
     ...restProps
   } = props;
 
@@ -182,6 +184,8 @@ export const IVSBroadcastCameraView = forwardRef<
     <RCTIVSBroadcastCameraView
       testID={NATIVE_VIEW_NAME}
       {...restProps}
+      currentCameraUrn={currentCameraUrn}
+      currentMicrophoneUrn={currentMicrophoneUrn}
       cameraPosition={cameraPosition}
       cameraPreviewAspectMode={cameraPreviewAspectMode}
       isCameraPreviewMirrored={isCameraPreviewMirrored}

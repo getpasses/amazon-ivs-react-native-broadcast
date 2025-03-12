@@ -21,6 +21,16 @@ class IVSBroadcastCameraView: UIView {
       self.broadcastSession.setCameraPreviewAspectMode(cameraPreviewAspectMode, self.onReceiveCameraPreviewHandler)
     }
   }
+  @objc var currentCameraUrn: NSString? {
+     didSet {
+       self.broadcastSession.setCurrentCameraUrn(currentCameraUrn, self.onReceiveCameraPreviewHandler)
+     }
+   }
+   @objc var currentMicrophoneUrn: NSString? {
+     didSet {
+       self.broadcastSession.setCurrentMicrophoneUrn(currentMicrophoneUrn)
+     }
+   }
   @objc var sessionLogLevel: NSString? {
     didSet {
       self.broadcastSession.setSessionLogLevel(sessionLogLevel)
