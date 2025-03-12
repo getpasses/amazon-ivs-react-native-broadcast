@@ -351,7 +351,6 @@ public class IVSBroadcastSessionService {
           continue;
         }
         System.out.println("device.urn====" + device.urn);
-        System.out.println("device.urn====" + device.type);
         if (device.type == Device.Descriptor.DeviceType.MICROPHONE) {
           if (device.urn.contains(urn)){
             targetDevice = device;
