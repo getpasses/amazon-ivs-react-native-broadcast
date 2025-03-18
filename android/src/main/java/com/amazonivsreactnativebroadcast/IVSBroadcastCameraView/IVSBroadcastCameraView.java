@@ -58,8 +58,17 @@ public class IVSBroadcastCameraView extends FrameLayout implements LifecycleEven
   }
 
   private void addCameraPreview(@NonNull View preview) {
+    this.setBackgroundColor(Color.BLACK);
+
+    if (preview instanceof TextureView) {
+        ((TextureView) preview).setOpaque(false);
+        ((TextureView) preview).setLayerType(View.LAYER_TYPE_HARDWARE, null);
+    }
+
     LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
     addView(preview, layoutParams);
+    preview.bringToFront();
+
     reLayout(preview);
     sendIsReadyEvent();
   }
