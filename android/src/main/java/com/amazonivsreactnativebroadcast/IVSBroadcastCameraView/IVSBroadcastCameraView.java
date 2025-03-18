@@ -1,5 +1,7 @@
 package com.amazonivsreactnativebroadcast.IVSBroadcastCameraView;
 
+import android.graphics.Color;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.FrameLayout;
 
