@@ -253,10 +253,8 @@ public class IVSBroadcastSessionService {
             }
         }
     } else {
-        Device.Descriptor[] defaultMicrophones = Presets.Devices.MICROPHONE(mReactContext);
-        selectedDevices.addAll(Arrays.asList(defaultMicrophones));
+        Log.i("Broadcast", "🔇 Skipping microphone attach because no initialMicrophoneUrn provided.");
     }
-
 
     return selectedDevices.toArray(new Device.Descriptor[0]);
 }
@@ -507,14 +505,23 @@ public class IVSBroadcastSessionService {
   }
 
   public void setCurrentMicrophoneUrn(String microphoneUrn) {
-    if (isInitialized()) {
-      if (!microphoneUrn.equals(currentMicrophoneUrn)){
-        swapMicrophone(microphoneUrn);
-      }
-    } else {
-      initialMicrophoneUrn = microphoneUrn;
+    if (microphoneUrn == null || microphoneUrn.isEmpty()) {
+        Log.w("Broadcast", "❗️Microphone URN is null or empty, skipping attach");
+        return;
     }
-  }
+
+    if (isInitialized()) {
+        if (microphoneUrn.equals(currentMicrophoneUrn)) {
+            Log.w("Broadcast", "⚠️ Skipping reattach of same microphone: " + microphoneUrn);
+            return;
+        }
+        Log.i("Broadcast", "🎤 Swapping to microphone: " + microphoneUrn);
+        swapMicrophone(microphoneUrn);
+    } else {
+        Log.i("Broadcast", "🎤 Will attach microphone during initialization: " + microphoneUrn);
+        initialMicrophoneUrn = microphoneUrn;
+    }
+}
 
   public void setCameraPreviewAspectMode(String cameraPreviewAspectModeName, CameraPreviewHandler callback) {
     cameraPreviewAspectMode = getAspectMode(cameraPreviewAspectModeName);
