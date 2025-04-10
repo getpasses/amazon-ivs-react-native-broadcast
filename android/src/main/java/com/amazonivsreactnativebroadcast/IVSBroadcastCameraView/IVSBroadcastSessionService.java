@@ -13,6 +13,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import android.util.Log;
 
 @FunctionalInterface
 interface CameraPreviewHandler {
