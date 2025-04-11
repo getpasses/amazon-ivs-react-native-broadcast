@@ -1,7 +1,12 @@
 export {
+  getAvailableDevices,
+  IVSDevicePosition
+} from './IVSBroadcastCameraView.types';
+
+export type {
   LogLevel,
-  CameraPosition,
   CameraPreviewAspectMode,
+  CameraPosition,
   NetworkHealth,
   BroadcastQuality,
   StateStatusUnion,
@@ -11,4 +16,5 @@ export {
   IBroadcastSessionError,
   IIVSBroadcastCameraView,
 } from './IVSBroadcastCameraView.types';
-export { default as IVSBroadcastCameraView } from './IVSBroadcastCameraView';
+
+export { IVSBroadcastCameraView } from './IVSBroadcastCameraView';

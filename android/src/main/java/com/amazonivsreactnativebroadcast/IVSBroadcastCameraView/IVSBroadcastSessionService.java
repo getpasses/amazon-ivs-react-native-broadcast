@@ -10,6 +10,11 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import android.util.Log;
+
 @FunctionalInterface
 interface CameraPreviewHandler {
   void run(ImagePreviewView cameraPreview);
@@ -25,12 +30,18 @@ public class IVSBroadcastSessionService {
   private ThemedReactContext mReactContext;
 
   private boolean isInitialMuted = false;
-  private Device.Descriptor.Position initialCameraPosition = Device.Descriptor.Position.BACK;
+  private Device.Descriptor.Position initialCameraPosition = Device.Descriptor.Position.FRONT;
   private BroadcastConfiguration.LogLevel initialSessionLogLevel = BroadcastConfiguration.LogLevel.ERROR;
   private boolean isCameraPreviewMirrored = false;
   private BroadcastConfiguration.AspectMode cameraPreviewAspectMode = BroadcastConfiguration.AspectMode.NONE;
   private ReadableMap customVideoConfig;
   private ReadableMap customAudioConfig;
+
+  private String currentCameraUrn;
+  private String currentMicrophoneUrn;
+
+  private String initialCameraUrn;
+  private String initialMicrophoneUrn;
 
   private Device.Descriptor attachedCameraDescriptor;
   private Device.Descriptor attachedMicrophoneDescriptor;
@@ -209,16 +220,48 @@ public class IVSBroadcastSessionService {
   }
 
   private ImagePreviewView getCameraPreview() {
+    if (broadcastSession == null) {
+      throw new IllegalStateException("Broadcast session is not initialized.");
+    }
     ImagePreviewView preview = broadcastSession.getPreviewView(cameraPreviewAspectMode);
-    preview.setMirrored(isCameraPreviewMirrored);
+    if (attachedCameraDescriptor != null) {
+      boolean isFront = attachedCameraDescriptor.position == Device.Descriptor.Position.FRONT;
+      preview.setMirrored(isFront);
+   }
     return preview;
   }
 
   private Device.Descriptor[] getInitialDeviceDescriptorList() {
-    return initialCameraPosition == Device.Descriptor.Position.BACK
-      ? Presets.Devices.BACK_CAMERA(mReactContext)
-      : Presets.Devices.FRONT_CAMERA(mReactContext);
-  }
+    Device.Descriptor[] availableDevices = BroadcastSession.listAvailableDevices(mReactContext);
+    List<Device.Descriptor> selectedDevices = new ArrayList<>();
+
+    if (initialCameraUrn != null && !initialCameraUrn.isEmpty()) {
+        for (Device.Descriptor device : availableDevices) {
+            if (device != null && device.urn.equals(initialCameraUrn) && device.type == Device.Descriptor.DeviceType.CAMERA) {
+                selectedDevices.add(device);
+                break;
+            }
+        }
+    } else {
+        Device.Descriptor[] defaultCameras = initialCameraPosition == Device.Descriptor.Position.BACK
+                ? Presets.Devices.BACK_CAMERA(mReactContext)
+                : Presets.Devices.FRONT_CAMERA(mReactContext);
+        selectedDevices.addAll(Arrays.asList(defaultCameras));
+    }
+
+    if (initialMicrophoneUrn != null && !initialMicrophoneUrn.isEmpty()) {
+        for (Device.Descriptor device : availableDevices) {
+            if (device != null && device.urn.equals(initialMicrophoneUrn) && device.type == Device.Descriptor.DeviceType.MICROPHONE) {
+                selectedDevices.add(device);
+                break;
+            }
+        }
+    } else {
+        Log.i("Broadcast", "🔇 Skipping microphone attach because no initialMicrophoneUrn provided.");
+    }
+
+    return selectedDevices.toArray(new Device.Descriptor[0]);
+}
 
   private void setCustomVideoConfig() {
     if (customVideoConfig != null) {
@@ -282,17 +325,53 @@ public class IVSBroadcastSessionService {
     }
   }
 
-  private void swapCameraAsync(CameraPreviewHandler callback) {
+  private void swapCameraAsync(String urn, CameraPreviewHandler callback) {
     broadcastSession.awaitDeviceChanges(() -> {
-      for (Device.Descriptor deviceDescriptor : broadcastSession.listAvailableDevices(mReactContext)) {
-        if (deviceDescriptor.type == Device.Descriptor.DeviceType.CAMERA && deviceDescriptor.position != attachedCameraDescriptor.position) {
-          broadcastSession.exchangeDevices(attachedCameraDescriptor, deviceDescriptor, newCamera -> {
-            attachedCameraDescriptor = newCamera.getDescriptor();
-            callback.run(getCameraPreview());
-          });
+      Device.Descriptor[] totalAvailableDevices = BroadcastSession.listAvailableDevices(mReactContext);
+      Device.Descriptor targetDevice = null;
+      for (Device.Descriptor device : totalAvailableDevices) {
+        if (device.urn.contains(urn)) {
+          targetDevice = device;
           break;
         }
       }
+
+      broadcastSession.exchangeDevices(attachedCameraDescriptor, targetDevice, newCamera -> {
+        attachedCameraDescriptor = newCamera.getDescriptor();
+        callback.run(getCameraPreview());
+      });
+    });
+  }
+  private void swapMicrophoneAsync(String urn) {
+    broadcastSession.awaitDeviceChanges(() -> {
+      System.out.println("device.urn====" + "dfsdfsdssddsd");
+      Device.Descriptor[] totalAvailableDevices = BroadcastSession.listAvailableDevices(mReactContext);
+      Device.Descriptor targetDevice = null;
+      for (Device.Descriptor device : totalAvailableDevices) {
+        if (device == null) {
+          System.err.println("swapMicrophoneAsync: Found a null device in the list!");
+          continue;
+        }
+        System.out.println("device.urn====" + device.urn);
+        if (device.type == Device.Descriptor.DeviceType.MICROPHONE) {
+          if (device.urn.contains(urn)){
+            targetDevice = device;
+            break;
+          }
+        }
+      }
+      if (targetDevice == null) {
+        System.err.println("swapMicrophoneAsync: No matching microphone found for URN: " + urn);
+        return;
+      }
+      if (attachedMicrophoneDescriptor == null) {
+        System.err.println("swapMicrophoneAsync: attachedMicrophoneDescriptor is null, cannot swap microphone.");
+        return;
+      }
+
+      broadcastSession.exchangeDevices(attachedMicrophoneDescriptor, targetDevice, newMicrophone -> {
+        attachedMicrophoneDescriptor = newMicrophone.getDescriptor();
+      });
     });
   }
 
@@ -326,6 +405,7 @@ public class IVSBroadcastSessionService {
       if (deviceDescriptor.type == Device.Descriptor.DeviceType.CAMERA) {
         attachedCameraDescriptor = deviceDescriptor;
       } else if (deviceDescriptor.type == Device.Descriptor.DeviceType.MICROPHONE) {
+        System.out.println("deviceDescriptor====" + deviceDescriptor.urn);
         attachedMicrophoneDescriptor = deviceDescriptor;
       }
     }
@@ -362,6 +442,11 @@ public class IVSBroadcastSessionService {
       throw new RuntimeException("Broadcast session has been already initialized.");
     } else {
       preInitialization();
+
+      config = config.changing($ -> {
+        $.autoReconnect.setEnabled(false);
+        return $;
+      });
 
       broadcastSession = new BroadcastSession(
         mReactContext,
@@ -400,9 +485,11 @@ public class IVSBroadcastSessionService {
     broadcastSession.stop();
   }
 
-  @Deprecated
-  public void swapCamera(CameraPreviewHandler callback) {
-    swapCameraAsync(callback);
+  public void swapCamera(String urn,CameraPreviewHandler callback) {
+    swapCameraAsync(urn,callback);
+  }
+  public void swapMicrophone(String urn) {
+    swapMicrophoneAsync(urn);
   }
 
   public void getCameraPreviewAsync(CameraPreviewHandler callback) {
@@ -411,13 +498,34 @@ public class IVSBroadcastSessionService {
     });
   }
 
-  public void setCameraPosition(String cameraPositionName, CameraPreviewHandler callback) {
+  public void setCurrentCameraUrn(String cameraUrn, CameraPreviewHandler callback) {
     if (isInitialized()) {
-      swapCameraAsync(callback);
+      if (!cameraUrn.equals(currentCameraUrn)){
+        swapCamera(cameraUrn,callback);
+      }
     } else {
-      initialCameraPosition = getCameraPosition(cameraPositionName);
+      initialCameraUrn = cameraUrn;
     }
   }
+
+  public void setCurrentMicrophoneUrn(String microphoneUrn) {
+    if (microphoneUrn == null || microphoneUrn.isEmpty()) {
+        Log.w("Broadcast", "❗️Microphone URN is null or empty, skipping attach");
+        return;
+    }
+
+    if (isInitialized()) {
+        if (microphoneUrn.equals(currentMicrophoneUrn)) {
+            Log.w("Broadcast", "⚠️ Skipping reattach of same microphone: " + microphoneUrn);
+            return;
+        }
+        Log.i("Broadcast", "🎤 Swapping to microphone: " + microphoneUrn);
+        swapMicrophone(microphoneUrn);
+    } else {
+        Log.i("Broadcast", "🎤 Will attach microphone during initialization: " + microphoneUrn);
+        initialMicrophoneUrn = microphoneUrn;
+    }
+}
 
   public void setCameraPreviewAspectMode(String cameraPreviewAspectModeName, CameraPreviewHandler callback) {
     cameraPreviewAspectMode = getAspectMode(cameraPreviewAspectModeName);

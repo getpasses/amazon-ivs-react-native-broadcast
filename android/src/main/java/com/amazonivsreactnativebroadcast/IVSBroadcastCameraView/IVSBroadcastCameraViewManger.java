@@ -38,6 +38,13 @@ public class IVSBroadcastCameraViewManger extends ViewGroupManager<IVSBroadcastC
 
   @Override
   public void receiveCommand(IVSBroadcastCameraView view, @NonNull String commandId, @Nullable ReadableArray args) {
+    System.out.println("Received commandId: " + commandId);
+    if (args != null) {
+      System.out.println("Received args: " + args.toString());
+    } else {
+      System.out.println("Received args: null");
+    }
+
     switch (commandId) {
       case IVSBroadcastCameraView.START_COMMAND_NAME: {
         view.start(args);
@@ -48,7 +55,22 @@ public class IVSBroadcastCameraViewManger extends ViewGroupManager<IVSBroadcastC
         break;
       }
       case IVSBroadcastCameraView.SWAP_CAMERA_COMMAND_NAME: {
-        view.swapCamera();
+        if (args != null && args.size() > 0) {
+          String urn = args.getString(0);
+          view.swapCamera(urn);
+        } else {
+          throw new IllegalArgumentException("SWAP_CAMERA_COMMAND_NAME requires at least one argument.");
+        }
+        break;
+      }
+
+      case IVSBroadcastCameraView.SWAP_MICROPHONE_COMMAND_NAME: {
+        if (args != null && args.size() > 0) {
+          String urn = args.getString(0);
+          view.swapMicrophone(urn);
+        } else {
+          throw new IllegalArgumentException("SWAP_CAMERA_COMMAND_NAME requires at least one argument.");
+        }
         break;
       }
       default: {
@@ -78,10 +100,16 @@ public class IVSBroadcastCameraViewManger extends ViewGroupManager<IVSBroadcastC
     view.setIsCameraPreviewMirrored(isCameraPreviewMirrored);
   }
 
-  @ReactProp(name = "cameraPosition")
-  public void setCameraPosition(@NonNull IVSBroadcastCameraView view, String cameraPosition) {
-    view.setCameraPosition(cameraPosition);
+  @ReactProp(name = "currentCameraUrn")
+  public void setCurrentCameraUrn(@NonNull IVSBroadcastCameraView view, String cameraUrn) {
+    view.setCurrentCameraUrn(cameraUrn);
   }
+
+  @ReactProp(name = "currentMicrophoneUrn")
+  public void setCurrentMicrophoneUrn(@NonNull IVSBroadcastCameraView view, String microphoneUrn) {
+    view.setCurrentMicrophoneUrn(microphoneUrn);
+  }
+
 
   @ReactProp(name = "cameraPreviewAspectMode")
   public void setCameraPreviewAspectMode(@NonNull IVSBroadcastCameraView view, String cameraPreviewAspectMode) {
