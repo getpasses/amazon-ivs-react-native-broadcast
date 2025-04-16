@@ -39,6 +39,7 @@ public class IVSHelperModule extends ReactContextBaseJavaModule {
         deviceMap.putString("name", device.friendlyName);
         deviceMap.putString("urn", device.urn);
         deviceMap.putString("type", device.type != null ? device.type.toString() : null);
+        deviceMap.putString("isDefault", Boolean.toString(device.isDefault));
         deviceMap.putString("position", device.position != null ? device.position.toString() : null);
 
         deviceArray.pushMap(deviceMap);

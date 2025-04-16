@@ -1,5 +1,6 @@
 export {
   getAvailableDevices,
+  IVSDevicePosition
 } from './IVSBroadcastCameraView.types';
 
 export type {
