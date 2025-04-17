@@ -274,6 +274,13 @@ const normalizeDevicePosition = (position: string | DeviceType): DeviceType => {
   return position;
 }
 
+const normalizeDeviceIsDefaut = (isDefault: string | boolean): boolean => {
+  if (typeof isDefault === 'string') {
+    return isDefault === "true";
+  }
+  return isDefault;
+}
+
 export interface DevicesProps {
   devices: Device[];
 }
@@ -292,6 +299,7 @@ export const getAvailableDevices = async (): Promise<Device[]> => {
     const devices = await IVSHelperModule.getAvailableDevices();
     const normalizedDevices: Device[] = devices.map((device:Device) => ({
       ...device,
+      isDefaut: normalizeDeviceIsDefaut(device.isDefault),
       type: normalizeDeviceType(device.type),
       position: normalizeDevicePosition(device.position)
     }));
