@@ -322,7 +322,7 @@ class IVSBroadcastSessionService: NSObject {
     public func initiate() throws {
         if (!self.isInitialized()) {
             try self.preInitiation()
-            self.config.autoReconnect.enabled = true
+            self.config.autoReconnect.enabled = false
             let initialDeviceDescriptorList = getInitialDeviceDescriptorList()
             
             self.broadcastSession = try IVSBroadcastSession(

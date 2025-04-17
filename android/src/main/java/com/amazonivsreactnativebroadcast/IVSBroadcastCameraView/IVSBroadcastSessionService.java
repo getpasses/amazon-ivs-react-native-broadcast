@@ -444,7 +444,7 @@ public class IVSBroadcastSessionService {
       preInitialization();
 
       config = config.changing($ -> {
-        $.autoReconnect.setEnabled(true);
+        $.autoReconnect.setEnabled(false);
         return $;
       });
 
