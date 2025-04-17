@@ -243,6 +243,7 @@ export interface Device {
   position: number;
   type: DeviceType;
   urn: string;
+  isDefault: boolean
 }
 
 export enum DeviceType {
@@ -273,15 +274,32 @@ const normalizeDevicePosition = (position: string | DeviceType): DeviceType => {
   return position;
 }
 
+const normalizeDeviceIsDefaut = (isDefault: string | boolean): boolean => {
+  if (typeof isDefault === 'string') {
+    return isDefault === "true";
+  }
+  return isDefault;
+}
+
 export interface DevicesProps {
   devices: Device[];
 }
 
+
+export enum IVSDevicePosition {
+  Unknown = 0, // Unknown position — typically treated as built-in
+  Front = 1, // Located on the front of the device (e.g. front microphone)
+  Back = 2, // Located on the back of the device (e.g. rear microphone)
+  USB = 3, // External device connected via USB
+  Bluetooth = 4, // External device connected via Bluetooth (e.g. AirPods)
+  AUX = 5 // External device connected via AUX cable (e.g. wired headset)
+}
 export const getAvailableDevices = async (): Promise<Device[]> => {
   try {
     const devices = await IVSHelperModule.getAvailableDevices();
     const normalizedDevices: Device[] = devices.map((device:Device) => ({
       ...device,
+      isDefault: normalizeDeviceIsDefaut(device.isDefault),
       type: normalizeDeviceType(device.type),
       position: normalizeDevicePosition(device.position)
     }));

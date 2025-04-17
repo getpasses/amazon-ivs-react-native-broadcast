@@ -27,7 +27,8 @@ RCT_EXPORT_METHOD(getAvailableDevices:(RCTPromiseResolveBlock)resolve reject:(RC
         @"name": device.friendlyName,
         @"urn": device.urn,
         @"type": @(device.type),
-        @"position": @(device.position)
+        @"position": @(device.position),
+        @"isDefault": @(device.isDefault)
       }];
     }
     resolve(deviceList);
