@@ -224,7 +224,10 @@ public class IVSBroadcastSessionService {
       throw new IllegalStateException("Broadcast session is not initialized.");
     }
     ImagePreviewView preview = broadcastSession.getPreviewView(cameraPreviewAspectMode);
-    preview.setMirrored(isCameraPreviewMirrored);
+    if (attachedCameraDescriptor != null) {
+      boolean isFront = attachedCameraDescriptor.position == Device.Descriptor.Position.FRONT;
+      preview.setMirrored(isFront);
+   }
     return preview;
   }
 
