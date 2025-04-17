@@ -299,7 +299,7 @@ export const getAvailableDevices = async (): Promise<Device[]> => {
     const devices = await IVSHelperModule.getAvailableDevices();
     const normalizedDevices: Device[] = devices.map((device:Device) => ({
       ...device,
-      isDefaut: normalizeDeviceIsDefaut(device.isDefault),
+      isDefault: normalizeDeviceIsDefaut(device.isDefault),
       type: normalizeDeviceType(device.type),
       position: normalizeDevicePosition(device.position)
     }));
